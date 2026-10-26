@@ -1,17 +1,21 @@
 {
   "expo": {
-    "name": "maidora-kenya",
+    "name": "Maidora Kenya",
     "slug": "maidora-kenya",
     "version": "1.0.0",
+    "scheme": "maidora",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "backgroundColor": "#F7F3E9",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "ke.maidora.app"
     },
     "android": {
+      "package": "ke.maidora.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#214E3B",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -20,6 +24,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#F7F3E9"
+        }
+      ],
+      "expo-font"
+    ]
   }
 }
