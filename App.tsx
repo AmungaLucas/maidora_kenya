@@ -15,6 +15,7 @@ import {
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins';
 import RootNavigator from './src/navigation/RootNavigator';
+import { AppStateProvider } from './src/state/AppStateContext';
 import { colors } from './src/theme/theme';
 
 ExpoSplashScreen.preventAutoHideAsync().catch(() => {});
@@ -48,9 +49,11 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer theme={NavTheme}>
-        <RootNavigator />
-      </NavigationContainer>
+      <AppStateProvider>
+        <NavigationContainer theme={NavTheme}>
+          <RootNavigator />
+        </NavigationContainer>
+      </AppStateProvider>
     </SafeAreaProvider>
   );
 }

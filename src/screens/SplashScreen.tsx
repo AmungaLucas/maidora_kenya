@@ -13,6 +13,8 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import BrandMark from '../components/brand/BrandMark';
 import { colors, fonts, splashThemes, SplashThemeName } from '../theme/theme';
+import { useAppState } from '../state/AppStateContext';
+import type { RootStackParamList } from '../navigation/types';
 
 /**
  * ============================================================
@@ -23,12 +25,8 @@ import { colors, fonts, splashThemes, SplashThemeName } from '../theme/theme';
  *   50   mark drops into place with an overshoot spring (~600ms)
  *   350  M-A-I-D-O-R-A springs up letter by letter (+50ms per letter)
  *   950  tagline fades in
- *   ~2600 navigate -> Home (replace, so back never returns to splash)
+ *   ~2600 replace -> Onboarding (signed out) or Main (signed in)
  */
-type RootStackParamList = {
-  Splash: undefined;
-  Home: undefined;
-};
 
 type Props = {
   theme?: SplashThemeName;
@@ -105,6 +103,7 @@ function PingLetter({
 export default function SplashScreen({ theme = 'light', duration = 2600 }: Props) {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { signedIn } = useAppState();
   const t = splashThemes[theme];
   const done = useRef(false);
 
@@ -124,7 +123,8 @@ export default function SplashScreen({ theme = 'light', duration = 2600 }: Props
     const id = setTimeout(() => {
       if (!done.current) {
         done.current = true;
-        navigation.replace('Home');
+        if (signedIn) navigation.replace('Main');
+        else navigation.replace('Onboarding');
       }
     }, duration);
     return () => clearTimeout(id);
