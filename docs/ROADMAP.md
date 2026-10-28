@@ -1,6 +1,8 @@
 # Maidora Kenya — Build Roadmap & Work Schedule
 
-v1.0 · 2026-10-28 (EAT) · Repo: `AmungaLucas/maidora_kenya` (main @ 837be01) · App: Expo SDK 58 / RN 0.88 / TypeScript
+v1.1 · 2026-10-28 (EAT) · Repo: `AmungaLucas/maidora_kenya` (main) · App: Expo SDK 58 / RN 0.88 / TypeScript
+
+> v1.1 changelog: the full screens scaffold landed on `main` (commit 6719e85, built in a parallel session) while this roadmap was being written. Phase 1 status updated from "next up" to "shipped + close-out", and the schedule was rebalanced.
 
 ---
 
@@ -12,6 +14,7 @@ v1.0 · 2026-10-28 (EAT) · Repo: `AmungaLucas/maidora_kenya` (main @ 837be01) �
 | PRD Part L heading | Received: `# PART L — DATA MODEL, SERVICES, BUILD, METRICS` |
 | PRD Part L body (§35 → end) | **Not received.** Every dependent item below is tagged `[PART-L]` and is provisional until it arrives |
 | Document's true final sentence | **Unverified** — cannot be quoted honestly until the full text is pasted |
+| Screens scaffold (Phase 1) | **Shipped** — commit 6719e85 "Maidora screens — full PRD scaffold on React Navigation" (landed from a parallel session); re-based onto main and verified `tsc --noEmit` clean on 2026-10-28 |
 
 Standing action: paste the full PRD into `docs/PRD.md` (one-time) so every future session builds from the repo copy instead of scrolling chat history. Until then, long-form spec text (exact 11 Home components, exact 9-screen spine copy, consent wording) gets re-pasted per phase.
 
@@ -46,31 +49,29 @@ Ledger rule: every money movement is an append-only ledger entry; balances are d
 
 ## 3. Phase plan
 
-### Phase 1 — Screens + React Navigation ← NEXT UP
-Goal: every PRD-known surface exists as a typed, navigable skeleton wired through native-stack; app runs end-to-end with placeholder content and brand loaders on every async surface.
+### Phase 1 — Screens + React Navigation — SHIPPED (6719e85), close-out remaining
+Shipped and verified (`tsc --noEmit` clean, 2026-10-28): 3-layer typed navigation (RootStack → 9-screen OnboardingStack spine → role-aware MainTab), employer surfaces (EmployerHome, Maids, MaidProfile, PostJob), maid surfaces (MaidHome, FindJobs, MaidProfileEditor), shared surfaces (Inbox with applicants/outreach channels, Conversation, JobDetail, Kyc, Paywall with `PaywallMoment` enum matching PRD pricing, Wallet, Account), 8-component UI kit, `AppStateContext` (signedIn / role), sample data in `src/data/samples.ts`. Pure React Navigation — no expo-router anywhere.
 
-| # | Task | Detail |
-|---|---|---|
-| 1.1 | Navigation foundation | Typed `RootNavigator` with param lists; stacks: Onboarding → Auth → Main; deep-link config for `maidora://`; splash handoff preserved |
-| 1.2 | Onboarding spine | 9 screens per §29 (~75 s total): Welcome, Phone entry, OTP verify (6-digit, resend rules), Role select, Profile basics, Consents ×3 (terms, privacy, **data-sharing per Kenya DPA 2019**), paywall preview + remaining slots — exact sequence finalized from PRD copy |
-| 1.3 | Employer surfaces | Home (§27 — 11 components + boost disclosure), Maids list (§28 — concurrency caps, cold-start flow), Maid Profile with **dual buttons never merged**: [Chat with Mary W.] and [Unlock Contact] as separate CTAs |
-| 1.4 | Chat | Two inboxes: Applicants (permanently free, unlimited) vs Outreach (paid, caps 1/5/10); thread screen built polling-ready |
-| 1.5 | KYC | 8-step wizard (single screen, internal stepper): document capture, review states, urgent KSh 150 → 72 h lane |
-| 1.6 | Paywalls | §30 order: verification (free) → subscription (KSh 99) → PAYG top-ups (chat 50 / unlock 100 / boost 100) |
-| 1.7 | Maid side | Apply flow (KSh 50), references module, boost purchase (KSh 100 / 72 h) |
-
-File layout (proposal — screen names to be aligned with PRD copy when pasted):
+Actual file layout as shipped:
 
 ```
 src/screens/
-  onboarding/   Welcome · PhoneEntry · OtpVerify · RoleSelect · ProfileBasics · Consents · (slots to fill 9 total)
-  auth/         Login (phone → OTP reuse)
-  employer/     Home · Maids · MaidProfile · ChatInboxes · ChatThread
-  kyc/          KycWizard (+ 8 step components)
-  paywall/      VerificationPaywall · Subscription · PaygTopUp
-  maid/         Apply · References · Boost
-  shared/       Settings · WalletLedger [PART-L]
+  onboarding/   Welcome · HowItWorks · Phone · Otp · RoleSelect · Consents · ProfileBasics · Notifications · AllSet  (9/9)
+  employer/     EmployerHome · Maids · MaidProfile · PostJob
+  maid/         MaidHome · FindJobs · MaidProfileEditor
+  shared/       Inbox (applicants/outreach) · Conversation · JobDetail · Kyc · Paywall · Wallet · Account
+src/components/ui/   Badge · Button · Card · EmptyState · Field · Icon · Screen · SectionHeader
+src/state/           AppStateContext (signedIn / role)
+src/data/            samples.ts (mock data — becomes the API seam in Phase 2)
 ```
+
+Remaining close-out:
+
+| # | Task | Detail |
+|---|---|---|
+| 1.8 | Runtime smoke | `bun install && bunx expo start` in Expo Go — confirm splash → onboarding spine → both role tabs → Paywall/KYC modals; brand loaders appear on async surfaces |
+| 1.9 | Spec-fidelity pass | Once PRD copy lands in `docs/PRD.md`, diff screens against §27–§29 (11 Home components, dual-button rule on MaidProfile, consent wording incl. DPA 2019, OTP copy) and fix gaps |
+| 1.10 | API seam | Introduce a typed API client module and route `samples.ts` reads through it, so the Phase 2 backend plugs in without screen rewrites |
 
 DoD: every screen reachable via typed navigation · `tsc --noEmit` clean · no expo-router imports anywhere · brand loaders wired · RN 0.88 positioning rule respected.
 
@@ -115,7 +116,7 @@ DoD: every screen reachable via typed navigation · `tsc --noEmit` clean · no e
 
 | Week | Dates (2026) | Focus | Ships | Depends on |
 |---|---|---|---|---|
-| W1 | Oct 28 – Nov 3 | Phase 1 — screens + navigation | Full navigable skeleton, tsc clean | — |
+| W1 | Oct 28 – Nov 3 | Phase 1 close-out (1.8–1.10) + Phase 2 start (2.1–2.2) | Smoke-tested scaffold on Expo Go; hosting skeleton live | SSH creds (for 2.1) |
 | W2 | Nov 4 – Nov 10 | Phase 2.1–2.4 — hosting + auth | Live API, OTP working | SSH creds, SMTP creds |
 | W3 | Nov 11 – Nov 17 | Phase 2.5 + Phase 3 — ledger + payments | STK Push live in sandbox | Daraja creds, Part L (schema) |
 | W4 | Nov 18 – Nov 24 | Phase 4 — chat E2E | Polling chat shipped | W3 |
@@ -149,7 +150,7 @@ Cadence: 3–4 working sessions per week; one numbered sub-phase per session; ea
 
 1. **You:** paste Part L (§35 → the document's true end) — I quote the final sentence to close the reading task.
 2. **You (optional, ideal):** paste the full PRD once for `docs/PRD.md`.
-3. **Me (on your go):** Phase 1 — build all screens + React Navigation wiring, `tsc` clean, commit.
+3. **Me (on your go):** Phase 1 close-out — runtime smoke checklist, typed API seam, spec-fidelity pass once PRD text lands in `docs/PRD.md`.
 4. **You:** revoke both exposed PATs; send one fresh fine-grained token.
 5. **When ready:** SSH + SMTP + Daraja credentials (they go straight into the server `.env`, never the repo).
 
